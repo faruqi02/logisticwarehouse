@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+{% load static %}
+<!--<link rel="stylesheet" href="{% static 'style.css' %}"> -->
+<style>
+        body{
+        background-color: bisque;
+    }
+      .container1{
+        text-align: center;
+    }
+    div{
+    background-color:azure;
+    height: 400px;
+    width: 500px;
+    margin: auto;
+    padding: 20px;
+    border: 10px black solid;
+    }
+    h1{
+        text-align: center;
+    }
+    button{
+        background-color: bisque;
+        border: 2px solid black;
+    }
+</style>
+<body>
+    <div class="container1">
+        <h1>Add Notification</h1>
+        <form action="{% url 'addrec' %}" method="post">
+            {% csrf_token %}
+            <label for="">Product Name</label><br><br>
+            <input type="text" name="productName"><br><br>
+            <label for="">Content</label><br><br>
+            <input type="text" name="notificationContent"><br><br>
+            <label for="">Quantity</label><br><br>
+            <input type="text" name="quantity"><br><br>
+            <label for="">Barcode</label><br><br>
+            <input type="text" name="barcode"><br><br>
+            <button type="submit" id="new">Submit</button>
+        </form>
+    </div>
+</body>
+
+</html>

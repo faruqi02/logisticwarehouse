@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+{% load static %}
+<!--<link rel="stylesheet" href="{% static 'style.css' %}">-->
+
+<body>
+    <div class="container2">
+        <h1>Update Inventory</h1>
+        <form action="{% url 'uprecInventoryStaff' inventory.id %}" method="post">
+            {% csrf_token %}
+            <label for="">Product Name</label><br><br>
+            <input type="text" name="productName" value="{{inventory.productName}}"><br><br>
+
+            <label for="">Quantity</label><br><br>
+            <input type="text" name="quantity" value="{{inventory.quantity}}"><br><br>
+
+
+            <label for="">Price</label><br><br>
+            <input type="text" name="price" value="{{inventory.price}}"><br><br>
+
+            <button type="submit" id="new1">Update</button>
+        </form>
+
+    </div>
+</body>
+
+</html>

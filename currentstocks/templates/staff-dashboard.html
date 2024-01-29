@@ -1,0 +1,164 @@
+{% extends "sidebar.html"%}
+
+{% block title %}
+	Dashboard | Staff
+{% endblock %}
+
+{% block style %}
+<style>
+	body{
+		background-color:#E4E9F7;
+	}
+	.box{
+		border:5px solid black;
+		margin-left: 50px;
+		margin-right: 50px;
+		margin-bottom: 25px;
+		text-align: center;
+	}
+	table{
+		margin: auto;
+	}
+	.container-dashboard{
+		text-align: center;
+	}
+	button{
+		background-color: bisque;
+	}
+</style>
+{% endblock %}
+
+{% block pagetitle %}
+	Staff Dashboard
+{% endblock%}
+
+{% block content %}
+<head>
+	<div class="container-dashboard">
+
+		<div class="box">
+			<h1>Inbound</h1>
+			<div class="box">
+				<h1>Add Inventory</h1>
+		        <form action="{% url 'add-inventory' %}" method="post">
+		            {% csrf_token %}
+		            <label for="">Product Name</label>
+		            <input type="text" name="productName"><br>
+		            <label for="">Quantity</label>
+		            <input type="text" name="quantity"><br>
+					<label for="">price</label>
+		            <input type="text" name="price"><br>
+		            <button type="submit" id="new">Submit</button>
+		        </form>				
+			</div>
+
+			<div class="box">
+				<h1>Inventory</h1>
+				<table border='1'>
+					<tr>
+						<th>ID</th>
+						<th>Product Name</th>
+						<th>Quantity</th>
+						<th>Price</th>
+						<th colspan="2" id="mid">Action</th>
+					</tr>
+				  	{% for x in inventory %}
+				    <tr>
+						<td>{{ x.id }}</td>
+						<td>{{ x.productName}}</td>
+						<td>{{ x.quantity }}</td>
+						<td>{{ x.price }}</td>
+			            <td><a href="update-inventory/{{x.id}}"><button id="up">update</button></a></td>
+			            <td><a href="delete-inventory/{{x.id}}"><button id="del">delete</button></a></td>   
+				    </tr>
+				  	{% endfor %}				
+				</table>	
+			</div>
+			
+		</div>
+
+		<div class="box">	
+			<h1>Outbound</h1>
+			<div class="box">
+				<h1>Register Barcode To Outbound</h1>
+			    <form method="post" action="{% url 'RegisterPackage' %}">
+			        {% csrf_token %}
+
+			        <label for="barcode">Barcode:</label>
+			        <input type="number" name="barcode" required>
+
+			        <button type="submit">Submit</button>
+			    </form>
+			</div>
+
+			<div class="box">
+				<h1>(for outbound staff)All package Movement</h1>
+				<table border='1'>
+				  <tr>
+					<th>ID</th>		
+					<th>Barcode</th>
+					<th>Barcode Image</th>
+					<th>Out Bound Date</th>
+					<th>Receive Date</th>
+				  </tr>
+				  {% for x in packagelog %}
+				    <tr>
+					  <td>{{ x.id }}</td>					  
+					  <td>{{ x.barcode }}</td>
+					  <td><img class="barcode-image" alt="Barcode Image" data-barcode="{{ x.barcode }}"></td> 
+					  <td>{{ x.outboundDate }}<br>{{x.outboundTime}}</td>
+					  <td>{{ x.receivedDate }}<br>{{x.receivedTime}}</td> 
+				    </tr>
+				  {% endfor %}
+				</table>
+				<div class="box">
+					<!--<input type="text" id="barcode-input" onkeydown="handleKeyPress(event)">
+					<p id="barcode-value"></p>-->
+					<form method="post" action="{% url 'outbound_by_barcode' %}">
+					    {% csrf_token %}
+					    <label for="barcode_to_outbound">Scan Barcode to Outbound:</label>
+					    <input type="text" name="barcode_to_outbound" id="barcode_to_outbound" required>
+					    <button type="submit">Outbound</button>
+					</form>
+				</div>
+
+			</div>
+		</div>		
+
+	</div>
+
+</head>
+{% endblock %}
+
+{% block script %}
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/barcodes/JsBarcode.code128.min.js"></script>
+<script>
+    function generateBarcode() {
+        // Find all elements with the class "barcode-image"
+        var barcodeImages = document.getElementsByClassName('barcode-image');
+
+        // Loop through each barcode image element
+        for (var i = 0; i < barcodeImages.length; i++) {
+            var barcodeElement = barcodeImages[i];
+            var barcodeValue = barcodeElement.getAttribute('data-barcode');
+
+            // Generate barcode for each element
+            JsBarcode(barcodeElement, barcodeValue, {
+                format: "CODE128",
+                displayValue: true
+            });
+        }
+    }
+
+    // Call the function when the document is ready
+    document.addEventListener("DOMContentLoaded", function () {
+        generateBarcode();
+    });
+
+    //reload every 2 seconds
+    //setInterval(function () {
+    //    location.reload();
+    //}, 2000);
+</script>
+{% endblock%}

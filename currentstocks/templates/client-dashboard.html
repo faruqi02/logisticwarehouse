@@ -1,0 +1,108 @@
+{% extends "sidebar.html"%}
+
+{% block title %}
+	Dashboard | Client
+{% endblock %}
+
+{% block style %}
+<style>
+	body{
+		background-color: #E4E9F7;
+	}
+	.box{
+		border:5px solid black;
+		margin-left: 50px;
+		margin-right: 50px;
+		margin-bottom: 25px;
+		text-align: center;
+	}
+	table{
+		margin: auto;
+	}
+	button{
+		background-color: bisque;
+		
+	}
+	.container-dashboard{
+		text-align: center;
+	}
+</style>
+{% endblock %}
+
+{% block pagetitle %}
+	Client Dashboard
+{% endblock%}
+
+{% block content %}
+<head>
+	<div class="container-dashboard">
+		<h1 class="text">Hello this is Client dashboard</h1>
+
+		<div class="box">
+			<h1>Order Submission</h1>
+		</div>
+
+		<div class="box">
+			<h1>Package Movement</h1>			
+			<div class="box">
+
+				<table border='1'>
+					<tr>
+					<th>ID</th>		
+					<th>Barcode</th>
+					<th>Barcode Image</th>
+					<th>Out Bound Date</th>
+					<th>Receive Date</th>
+					</tr>
+				  	{% for x in packagelog %}
+					<tr>
+					  <td>{{ x.id }}</td>					  
+					  <td>{{ x.barcode }}</td>
+					  <td><img class="barcode-image" alt="Barcode Image" data-barcode="{{ x.barcode }}"></td> 
+					  <td>{{ x.outboundDate }}<br>{{x.outboundTime}}</td>
+					  <td>{{ x.receivedDate }}<br>{{x.receivedTime}}</td>   
+					</tr>
+				  	{% endfor %}				
+				</table>
+				<div class>
+					<!--<input type="text" id="barcode-input" onkeydown="handleKeyPress(event)">
+					<p id="barcode-value"></p>-->
+					<form method="post" action="{% url 'update_by_barcode' %}">
+					    {% csrf_token %}
+					    <label for="barcode_to_update">Scan Barcode to Update:</label>
+					    <input type="text" name="barcode_to_update" id="barcode_to_update" required>
+					    <button type="submit">Update</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</head>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/barcodes/JsBarcode.code128.min.js"></script>
+<script>
+    function generateBarcode() {
+        // Find all elements with the class "barcode-image"
+        var barcodeImages = document.getElementsByClassName('barcode-image');
+
+        // Loop through each barcode image element
+        for (var i = 0; i < barcodeImages.length; i++) {
+            var barcodeElement = barcodeImages[i];
+            var barcodeValue = barcodeElement.getAttribute('data-barcode');
+
+            // Generate barcode for each element
+            JsBarcode(barcodeElement, barcodeValue, {
+                format: "CODE128",
+                displayValue: true
+            });
+        }
+    }
+
+    // Call the function when the document is ready
+    document.addEventListener("DOMContentLoaded", function () {
+        generateBarcode();
+    });
+</script>
+{% endblock%}

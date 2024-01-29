@@ -1,0 +1,199 @@
+{% extends "sidebar.html"%}
+
+{% block title %}
+	Dashboard | Manager
+{% endblock %}
+
+{% block style %}
+<style>
+	body{
+		background-color:#E4E9F7;
+	}
+	.box{
+		border:5px solid black;
+		margin-left: 50px;
+		margin-right: 50px;
+		margin-bottom: 25px;
+		text-align: center;
+	}
+	.container-dashboard{
+		text-align: center;
+	}
+
+	#up{
+		background-color:bisque;
+		border: 2px solid black;
+	}
+	#del{
+		background-color: bisque;
+		border: 2px solid black;
+	}
+	#new3{
+		background-color: bisque;
+		border: 2px solid black;
+	}
+	table{
+		margin: auto;
+	}
+</style>
+{% endblock %}
+
+{% block pagetitle %}
+	Manager Dashboard
+{% endblock%}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% block content %}
+<head>
+	<div class="container-dashboard">
+		<div class="box">
+			<h1>Reorder</h1>
+			<table border='1'>
+				<tr>
+					<th>ID</th>
+					<th>Product Name</th>
+					<th>Content</th>
+					<th>Quantity</th>
+					<th>Barcode</th>
+					<th>Barcode Image</th>
+					<th colspan="2" id="mid">Action</th>
+				</tr>
+			  	{% for x in notification %}
+			    <tr>
+					<td>{{ x.id }}</td>
+					<td>{{ x.productName }}</td>
+					<td>{{ x.notificationContent }}</td>
+					<td>{{ x.quantity }}</td>
+					<td>{{ x.barcode }}</td>
+					<td><img class="barcode-image" alt="Barcode Image" data-barcode="{{ x.barcode }}"></td> 
+		            <td><a href="update/{{x.id}}"><button id="up">update</button></a></td>
+		            <td><a href="delete/{{x.id}}"><button id="del">delete</button></a></td>     
+			    </tr>
+			  	{% endfor %}
+			</table>
+			<br><br>
+      		<a href="{% url 'add' %}"><button id="new3">Reorder</button></a>
+		</div>
+
+		<div class="box">		
+			<h1>Package Movement</h1>
+			<table border='1'>
+				  <tr>
+					<th>ID</th>		
+					<th>Barcode</th>
+					<th>Barcode Image</th>
+					<th>Out Bound Date</th>
+					<th>Receive Date</th>
+				  </tr>
+				  {% for x in packagelog %}
+				    <tr>
+					  <td>{{ x.id }}</td>					  
+					  <td>{{ x.barcode }}</td>
+					  <td><img class="barcode-image" alt="Barcode Image" data-barcode="{{ x.barcode }}"></td> 
+					  <td>{{ x.outboundDate }}<br>{{x.outboundTime}}</td>
+					  <td>{{ x.receivedDate }}<br>{{x.receivedTime}}</td> 
+				    </tr>
+				  {% endfor %}
+			</table>
+		</div>
+
+		<div class="box">		
+			<h1>Inventory</h1>
+			<table border='1'>
+				<tr>
+					<th>ID</th>
+					<th>Product Name</th>
+					<th>Quantity</th>
+					<th>Price</th>
+					<th colspan="2" id="mid">Action</th>
+				</tr>
+			  	{% for x in inventory %}
+			    <tr>
+					<td>{{ x.id }}</td>
+					<td>{{ x.productName}}</td>
+					<td>{{ x.quantity }}</td>
+					<td>{{ x.price }}</td>
+		            <td><a href="update-inventory/{{x.id}}"><button id="up">update</button></a></td>
+		            <td><a href="delete-inventory/{{x.id}}"><button id="del">delete</button></a></td>   
+			    </tr>
+			  	{% endfor %}				
+			</table>
+		</div>
+
+		<div class="box">		
+			<h1>Data Display</h1>
+			<canvas id="pieChart" width=500" height="500"></canvas>
+		</div>
+		<div class="box">		
+			<h1>All Barcode Database</h1>
+			<table border='1'>
+				<tr>
+					<th>ID</th>
+					<th>Barcode</th>
+					<th>Barcode Image</th>
+				</tr>
+			  	{% for x in barcode %}
+			    <tr>
+					<td>{{ x.id }}</td>
+					<td>{{ x.barcode}}</td>
+ 					<td><img class="barcode-image" alt="Barcode Image" data-barcode="{{ x.barcode }}"></td> 
+			    </tr>
+			  	{% endfor %}				
+			</table>
+		</div>
+	</div>
+</head>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/barcodes/JsBarcode.code128.min.js"></script>
+<script>
+    function generateBarcode() {
+        // Find all elements with the class "barcode-image"
+        var barcodeImages = document.getElementsByClassName('barcode-image');
+
+        // Loop through each barcode image element
+        for (var i = 0; i < barcodeImages.length; i++) {
+            var barcodeElement = barcodeImages[i];
+            var barcodeValue = barcodeElement.getAttribute('data-barcode');
+
+            // Generate barcode for each element
+            JsBarcode(barcodeElement, barcodeValue, {
+                format: "CODE128",
+                displayValue: true
+            });
+        }
+    }
+
+    // Call the function when the document is ready
+    document.addEventListener("DOMContentLoaded", function () {
+        generateBarcode();
+	    var ctx = document.getElementById('pieChart').getContext('2d');
+	    var data = {
+	        labels: [{% for item in inventory_data %}"{{ item.productName }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+	        datasets: [{
+	            data: [{% for item in inventory_data %}{{ item.quantity }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+	            backgroundColor: [
+	                'rgba(255, 99, 132, 0.5)',
+	                'rgba(54, 162, 235, 0.5)',
+	                'rgba(255, 206, 86, 0.5)',
+	                // Add more colors as needed
+	            ],
+	        }]
+	    };
+
+	    var options = {
+	        responsive: true,
+	    };
+
+	    var pieChart = new Chart(ctx, {
+	        type: 'pie',
+	        data: data,
+	        options: options
+	    });       
+    });
+</script>
+
+<script >
+
+</script>
+{% endblock%}

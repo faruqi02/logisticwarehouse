@@ -1,0 +1,64 @@
+{% extends "sidebar.html" %}
+
+{% block title %}
+    Barcode Generator
+{% endblock %}
+
+{% block style %}
+    <style>
+        #scanner-container {
+            width: 100%;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        #img-container {
+            /* Remove float: top; and use an appropriate style if needed */
+        }
+
+        #barcode-result {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        #barcode-image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        #generate-button {
+            margin-top: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="scanner-container">
+        <h1 id="barcode-result">Generated Barcode</h1>
+
+        <div id="img-container">
+            <img id="barcode-image" alt="Barcode Image">
+        </div>
+
+        <button onclick="generateBarcode()">Generate Random Barcode</button>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/barcodes/JsBarcode.code128.min.js"></script>
+    <script>
+    function generateBarcode() {
+        // Generate a random 13-digit number
+        var randomNum = Math.floor(Math.random() * 10000000000000);
+        
+        // Convert to string and pad with zeros if needed
+        var input = String(randomNum).padStart(13, '0');
+
+        JsBarcode("#barcode-image", input, {
+            format: "CODE128",
+            displayValue: true
+        });
+    }
+    </script>
+{% endblock %}

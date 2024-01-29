@@ -1,0 +1,75 @@
+{% extends "sidebar.html"%}
+
+{% block title %}
+	Barcode Scanner
+{% endblock %}
+
+<!-- Include Quagga.js library -->
+{% block source %}
+	<script src="https://cdn.rawgit.com/serratus/quaggaJS/0.12.1/dist/quagga.min.js"></script>    
+{% endblock %}
+
+    
+    {% block style %}
+    <style>
+        #scanner-container {
+            width: 100%;
+            text-align: center;
+        }
+
+        #video-preview {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+        }
+    </style>
+    {% endblock %}
+
+	{% block content %}
+    <div id="scanner-container">
+        <h1 id="barcode-result">Scan a barcode</h1>
+        <div id="video-preview"></div>
+    </div>
+    {% endblock %}
+
+    {% block script %}
+    <script>
+        // Function to initialize Quagga.js
+        function initializeScanner() {
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector("#video-preview"),
+                    constraints: {
+                        width: 600,
+                        height: 400,
+                        facingMode: "environment" // Use the back camera
+                    },
+                },
+                decoder: {
+                    readers: ["ean_reader"] // Specify the barcode reader type
+                },
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function(result) {
+                var barcodeValue = result.codeResult.code;
+                document.getElementById("barcode-result").innerText = "Barcode: " + barcodeValue;
+                Quagga.stop();
+            });
+        }
+
+        // Check for getUserMedia support
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            initializeScanner();
+        } else {
+            alert("Sorry, your browser doesn't support the necessary features to use this barcode scanner.");
+        }
+    </script>
+    {% endblock %}

@@ -1,0 +1,138 @@
+{% extends "sidebar.html"%}
+
+{% block title %}
+	Dashboard | Supplier
+{% endblock %}
+
+{% block style %}
+<style>
+	h1{
+		text-align: center;
+	}
+
+	.container-dashboard{
+		align-items: :centre;
+	}
+
+    .box1 {
+    	border: 1px solid black;
+    	margin :25px 50px 75px;
+    	background-color: lightblue;
+    }
+	.box2 {
+		border: 1px solid black;
+    	margin :25px 50px 75px;
+    	background-color: lightblue;
+		height: 70px;
+		text-align: center;
+	}
+
+    .hidden {
+    	display: none;
+    }
+	table{
+		margin: auto;
+
+	}
+	.label{
+		margin: auto;
+	}
+	p{
+		text-align: center;
+	}
+	button{
+		background-color: bisque;
+		border: 2px solid black;
+	}
+
+</style>
+{% endblock %}
+{% block pagetitle %}
+	Supplier Dashboard
+{% endblock%}
+
+{% block content %}
+<head>
+	<div class="container-dashboard">
+
+		<div class="box1">
+			<h1>This is notification</h1>
+			<table border='1'>
+			  <tr>
+			    <th>Product Name</th>
+			    <th>Content</th>
+			    <th>Quantity</th>
+			    <th>Barcode</th>
+			    <th>Barcode Image</th>
+			  </tr>
+			  {% for x in notification %}
+			    <tr>
+			      <td>{{ x.productName }}</td>
+			      <td>{{ x.notificationContent }}</td>
+			      <td>{{ x.quantity }}</td>
+			      <td>{{ x.barcode }}</td>
+			      <td><img class="barcode-image" alt="Barcode Image" data-barcode="{{ x.barcode }}"></td>    
+			    </tr>
+			  {% endfor %}
+			</table>
+		</div>
+
+		<div class="box2">
+			<!--<input type="text" id="barcode-input" onkeydown="handleKeyPress(event)">
+			<p id="barcode-value"></p>-->
+			<form method="post" action="{% url 'delete_by_barcode' %}">
+			    {% csrf_token %}
+			    <label for="barcode_to_delete">Scan Barcode to delete:</label>
+			    <input type="text" name="barcode_to_delete" id="barcode_to_delete" required>
+			    <button type="submit">Delete</button>
+			</form>	
+		</div>		
+	</div>
+
+</head>
+{% endblock %}
+
+{% block script %}
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/barcodes/JsBarcode.code128.min.js"></script>
+<script>
+	function handleKeyPress(event) {
+		// Check if the pressed key is 'Enter'
+		if (event.key === 'Enter') {
+			// Get the input value
+			var inputValue = document.getElementById('barcode-input').value;
+
+			// Do something with the input value (for example, display it)
+			document.getElementById('barcode-value').innerText = 'Barcode: ' + inputValue;
+			document.getElementById('barcode-input').value = '';
+		}
+	}
+
+    function generateBarcode() {
+        // Find all elements with the class "barcode-image"
+        var barcodeImages = document.getElementsByClassName('barcode-image');
+
+        // Loop through each barcode image element
+        for (var i = 0; i < barcodeImages.length; i++) {
+            var barcodeElement = barcodeImages[i];
+            var barcodeValue = barcodeElement.getAttribute('data-barcode');
+
+            // Generate barcode for each element
+            JsBarcode(barcodeElement, barcodeValue, {
+                format: "CODE128",
+                displayValue: true
+            });
+        }
+    }
+
+    // Call the function when the document is ready
+    document.addEventListener("DOMContentLoaded", function () {
+        generateBarcode();
+    });
+
+    //reload every 2 seconds
+    //setInterval(function () {
+    //    location.reload();
+    //}, 2000);
+</script>
+{% endblock%}
